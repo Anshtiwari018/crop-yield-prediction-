@@ -1,0 +1,12 @@
+# API keys aur secrets — kabhi GitHub pe mat daalo!
+.env
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+
+# Jupyter
+.ipynb_checkpoints/
