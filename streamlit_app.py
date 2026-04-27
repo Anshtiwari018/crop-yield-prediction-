@@ -5,7 +5,8 @@ import plotly.graph_objects as go
 import os
 from datetime import datetime
 from main import run_prediction
-
+import logging
+logging.getLogger("streamlit").setLevel(logging.ERROR)
 # ============================================================
 #  PAGE CONFIG
 # ============================================================
@@ -453,11 +454,11 @@ with st.sidebar:
     st.markdown('<div class="sidebar-tagline">Smart Farming Intelligence</div>', unsafe_allow_html=True)
     st.markdown('<div class="sidebar-section">Navigation</div>', unsafe_allow_html=True)
 
-    menu = st.radio(
-        "",
-        ["🌾  Dashboard", "📊  Analytics", "📜  History", "ℹ️  About"],
-        label_visibility="collapsed",
-    )
+  menu = st.radio(
+    "Navigation",   # 👈 बस यही change है
+    ["🌾  Dashboard", "📊  Analytics", "📜  History", "ℹ️  About"],
+    label_visibility="collapsed",
+)
 
     st.markdown('<div class="sidebar-section">Quick Stats</div>', unsafe_allow_html=True)
     df_hist = load_history()
@@ -509,8 +510,7 @@ if "Dashboard" in menu:
     st.markdown("<div style='height:8px'></div>", unsafe_allow_html=True)
     run_col, _ = st.columns([1, 4])
     with run_col:
-        predict = st.button("⚡  Run Prediction", use_container_width=True)
-
+        predict = st.button("⚡  Run Prediction", width="stretch")
     # ── RESULTS ──────────────────────────────────────────────
     if predict:
         with st.spinner("Analyzing weather & running ML model…"):
