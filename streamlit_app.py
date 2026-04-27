@@ -768,29 +768,42 @@ elif "History" in menu:
 
         # Filters
         f1, f2, _ = st.columns([1, 1, 3])
+
         with f1:
             if "Crop" in df.columns:
-                crop_filter = st.multiselect("Filter by Crop", df["Crop"].unique(), default=list(df["Crop"].unique()))
+                crop_filter = st.multiselect(
+                    "Filter by Crop",
+                    df["Crop"].unique(),
+                    default=list(df["Crop"].unique())
+                )
                 df = df[df["Crop"].isin(crop_filter)]
+
         with f2:
             if "State" in df.columns:
-                state_filter = st.multiselect("Filter by State", df["State"].unique(), default=list(df["State"].unique()))
+                state_filter = st.multiselect(
+                    "Filter by State",
+                    df["State"].unique(),
+                    default=list(df["State"].unique())
+                )
                 df = df[df["State"].isin(state_filter)]
 
-       df["Yield"] = df["Yield"].round(2)
-df["Temp"] = df["Temp"].round(1)
+        # ✅ FIXED INDENTATION (yahi main issue tha)
+        df["Yield"] = df["Yield"].round(2)
+        df["Temp"] = df["Temp"].round(1)
 
-st.dataframe(df.reset_index(drop=True), use_container_width=True)
+        st.dataframe(df.reset_index(drop=True), use_container_width=True)
+
+        # Download button
         dl_col, _ = st.columns([1, 5])
         with dl_col:
             csv = df.to_csv(index=False).encode("utf-8")
             st.download_button(
-                "⬇  Export CSV", csv,
+                "⬇ Export CSV",
+                csv,
                 file_name=f"cropiq_history_{datetime.now().strftime('%Y%m%d')}.csv",
                 mime="text/csv",
                 use_container_width=True,
             )
-
 
 # ============================================================
 #  ABOUT
