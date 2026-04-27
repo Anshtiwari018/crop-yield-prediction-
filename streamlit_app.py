@@ -777,17 +777,10 @@ elif "History" in menu:
                 state_filter = st.multiselect("Filter by State", df["State"].unique(), default=list(df["State"].unique()))
                 df = df[df["State"].isin(state_filter)]
 
-        st.dataframe(
-            df.style.format({
-                "Yield": "{:.2f}",
-                "Income": "₹{:,.0f}",
-                "Profit": "₹{:,.0f}",
-                "Confidence": "{}%",
-            }).background_gradient(subset=["Yield"], cmap="Greens"),
-            use_container_width=True,
-            hide_index=True,
-        )
+       df["Yield"] = df["Yield"].round(2)
+df["Temp"] = df["Temp"].round(1)
 
+st.dataframe(df.reset_index(drop=True), use_container_width=True)
         dl_col, _ = st.columns([1, 5])
         with dl_col:
             csv = df.to_csv(index=False).encode("utf-8")
