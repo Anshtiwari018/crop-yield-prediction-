@@ -45,7 +45,6 @@ html, body, [class*="css"] { font-family: 'Inter', sans-serif; }
 [data-testid="column"] > div > div,
 [data-testid="stVerticalBlock"] > div,
 [data-testid="stHorizontalBlock"] > div,
-div[data-testid="stMarkdownContainer"],
 .element-container {
     background-color: unset !important;
 }
