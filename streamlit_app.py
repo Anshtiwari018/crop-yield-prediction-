@@ -679,7 +679,7 @@ with cw:
     st.markdown(
         "<div class='section-hdr'>Weather Conditions</div>", unsafe_allow_html=True
     )
-    w1, w2, w3 = st.columns(3)
+    w1, w2, w3 = st.columns([1, 1, 1.3])
     w1.metric("Temp", f"{round(temp)}°C")
     w2.metric("Humidity", f"{int(humidity)}%")
     w3.metric("Rainfall", f"{int(rain)}mm")
