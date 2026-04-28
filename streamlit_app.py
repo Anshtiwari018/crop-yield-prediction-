@@ -216,7 +216,7 @@ section[data-testid="stSidebar"] label {
 
 </style>
 """,
-unsafe_allow_html=True,
+    unsafe_allow_html=True,
 )
 
 
@@ -680,9 +680,9 @@ with cw:
         "<div class='section-hdr'>Weather Conditions</div>", unsafe_allow_html=True
     )
     w1, w2, w3 = st.columns(3)
-    w1.metric("Temp", f"{temp:.1f}°C")
-    w2.metric("Humidity", f"{humidity:.0f}%")
-    w3.metric("Rainfall", f"{rain:.0f} mm")
+    w1.metric("Temp", f"{round(temp)}°C")
+    w2.metric("Humidity", f"{int(humidity)}%")
+    w3.metric("Rainfall", f"{int(rain)} mm")
     st.markdown(
         f"<p style='font-size:0.77rem;color:#7a9485;margin:8px 0 12px;'>"
         f"Season: <b style='color:#1a3a2a;'>{get_season_label(month_num)}</b>"
