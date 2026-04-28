@@ -384,24 +384,40 @@ def state_avg(s):
 
 
 def get_weather(city):
+
+    # ❌ API key missing
     if not WEATHER_API_KEY:
-        return 28.0, 60.0, 50.0, False
+        st.error("API key missing! Add it in secrets.toml")
+        return None, None, None, False
+
     try:
         url = (
-            f"http://api.openweathermap.org/data/2.5/weather"
+            f"https://api.openweathermap.org/data/2.5/weather"
             f"?q={city}&appid={WEATHER_API_KEY}&units=metric"
         )
+
         d = requests.get(url, timeout=6).json()
-        if "main" not in d:
-            return 28.0, 60.0, 50.0, False
-        return (
-            float(d["main"]["temp"]),
-            float(d["main"]["humidity"]),
-            float(d.get("rain", {}).get("1h", 0)),
-            True,
+
+        # ❌ API error / wrong city
+        if d.get("cod") != 200:
+            st.error(f"API Error: {d.get('message')}")
+            return None, None, None, False
+
+        temp = float(d["main"]["temp"])
+        humidity = float(d["main"]["humidity"])
+
+        # ✅ rainfall safe handling
+        rain = float(
+            d.get("rain", {}).get("1h") or 
+            d.get("rain", {}).get("3h") or 
+            0
         )
+
+        return temp, humidity, rain, True
+
     except Exception:
-        return 28.0, 60.0, 50.0, False
+        st.error("Weather API failed")
+        return None, None, None, False
 
 
 def analyze_crop(temp, rain, humidity, month):
@@ -410,8 +426,12 @@ def analyze_crop(temp, rain, humidity, month):
         s = 30 if d["temp"][0] <= temp <= d["temp"][1] else 0
         s += 30 if d["rain"][0] <= rain <= d["rain"][1] else 0
         s += 20 if d["humidity"][0] <= humidity <= d["humidity"][1] else 0
-        s += 20 if month in d["months"] else 0
+
+        # ✅ FIXED (month ka strong effect)
+        s += 20 if month in d["months"] else -40
+
         res[crop] = s
+
     return max(res, key=res.get), res
 
 
@@ -445,7 +465,6 @@ def calc_profit(crop, yield_kg):
     p = CROPS[crop]["price"]
     inc = yield_kg * p
     return int(inc), int(inc - yield_kg * 5)
-
 
 # ══════════════════════════════════════════════
 #  SIDEBAR
