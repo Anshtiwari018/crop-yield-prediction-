@@ -32,7 +32,7 @@ st.markdown(
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
-html, body, [class*="css"] { font-family: 'Inter', sans-serif; }
+html, body { font-family: 'Inter', sans-serif; }
 
 /* ── Force light background everywhere ── */
 .stApp {
@@ -203,9 +203,20 @@ section[data-testid="stSidebar"] label {
 }
 
 #MainMenu, footer, header { visibility: hidden; }
+
+[data-testid="stMetricValue"] {
+    color: #1a3a2a !important;
+    opacity: 1 !important;
+}
+
+[data-testid="stMetricLabel"] {
+    color: #4a7a5a !important;
+    opacity: 1 !important;
+}
+
 </style>
 """,
-    unsafe_allow_html=True,
+unsafe_allow_html=True,
 )
 
 
