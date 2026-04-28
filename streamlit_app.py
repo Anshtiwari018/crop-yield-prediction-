@@ -47,7 +47,7 @@ html, body, [class*="css"] { font-family: 'Inter', sans-serif; }
 [data-testid="stHorizontalBlock"] > div,
 div[data-testid="stMarkdownContainer"],
 .element-container {
-    background-color: transparent !important;
+    background-color: unset !important;
 }
 
 .main .block-container {
