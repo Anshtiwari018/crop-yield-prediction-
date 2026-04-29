@@ -7,16 +7,13 @@ import matplotlib.pyplot as plt
 from datetime import datetime
 
 # ══════════════════════════════════════════════
-#  API KEY  –  from .streamlit/secrets.toml
+#  CONFIG
 # ══════════════════════════════════════════════
 try:
     WEATHER_API_KEY = st.secrets["API_KEY"]
 except Exception:
     WEATHER_API_KEY = ""
 
-# ══════════════════════════════════════════════
-#  PAGE CONFIG
-# ══════════════════════════════════════════════
 st.set_page_config(
     page_title="Crop Yield Prediction",
     page_icon="🌾",
@@ -25,7 +22,7 @@ st.set_page_config(
 )
 
 # ══════════════════════════════════════════════
-#  GLOBAL CSS
+#  CSS  (same design — no changes)
 # ══════════════════════════════════════════════
 st.markdown(
     """
@@ -34,75 +31,46 @@ st.markdown(
 
 html, body { font-family: 'Inter', sans-serif; }
 
-/* ── Force light background everywhere ── */
-.stApp {
-    background-color: #f5f7f2 !important;
-}
-.main, .main > div, .block-container {
-    background-color: #f5f7f2 !important;
-}
-/* Fix Streamlit column/element containers going dark */
+.stApp { background-color: #f5f7f2 !important; }
+.main, .main > div, .block-container { background-color: #f5f7f2 !important; }
 [data-testid="column"] > div > div,
 [data-testid="stVerticalBlock"] > div,
 [data-testid="stHorizontalBlock"] > div,
-.element-container {
-    background-color: unset !important;
-}
-
+.element-container { background-color: unset !important; }
 .main .block-container {
     background: #f5f7f2 !important;
-    padding-top: 1.5rem;
-    padding-bottom: 3rem;
-    max-width: 1200px;
+    padding-top: 1.5rem; padding-bottom: 3rem; max-width: 1200px;
 }
 
-/* ── Sidebar ── */
-section[data-testid="stSidebar"] {
-    background: #1a3a2a;
-    border-right: 1px solid #243d2e;
-}
+section[data-testid="stSidebar"] { background: #1a3a2a; border-right: 1px solid #243d2e; }
 section[data-testid="stSidebar"] * { color: #e8f0ec !important; }
 section[data-testid="stSidebar"] .stButton > button {
-    background: #2d7a46 !important;
-    color: white !important;
-    border: none !important;
-    border-radius: 8px !important;
-    font-weight: 600 !important;
-    padding: 0.65rem 1rem !important;
-    width: 100%;
+    background: #2d7a46 !important; color: white !important;
+    border: none !important; border-radius: 8px !important;
+    font-weight: 600 !important; padding: 0.65rem 1rem !important; width: 100%;
 }
-section[data-testid="stSidebar"] .stButton > button:hover {
-    background: #236038 !important;
-}
+section[data-testid="stSidebar"] .stButton > button:hover { background: #236038 !important; }
 section[data-testid="stSidebar"] .stSelectbox > div > div,
 section[data-testid="stSidebar"] .stNumberInput input,
 section[data-testid="stSidebar"] .stTextInput input {
-    background: #243d2e !important;
-    border: 1px solid #3a5c47 !important;
-    border-radius: 7px !important;
-    color: #e8f0ec !important;
+    background: #243d2e !important; border: 1px solid #3a5c47 !important;
+    border-radius: 7px !important; color: #e8f0ec !important;
 }
 section[data-testid="stSidebar"] hr { border-color: #2d4d3a !important; }
 section[data-testid="stSidebar"] label {
-    color: #8dbfa0 !important;
-    font-size: 0.78rem !important;
-    font-weight: 500 !important;
-    letter-spacing: 0.03em !important;
+    color: #8dbfa0 !important; font-size: 0.78rem !important;
+    font-weight: 500 !important; letter-spacing: 0.03em !important;
     text-transform: uppercase !important;
 }
 
-/* ── Stat card ── */
 .stat-card {
-    background: #ffffff;
-    border-radius: 12px;
+    background: #ffffff; border-radius: 12px;
     padding: 1.1rem 1.2rem 1rem;
-    border: 1px solid #e4ebe6;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+    border: 1px solid #e4ebe6; box-shadow: 0 1px 4px rgba(0,0,0,0.05);
 }
 .stat-card .label {
-    font-size: 0.72rem; font-weight: 600;
-    text-transform: uppercase; letter-spacing: 0.05em;
-    color: #7a9485; margin-bottom: 4px;
+    font-size: 0.72rem; font-weight: 600; text-transform: uppercase;
+    letter-spacing: 0.05em; color: #7a9485; margin-bottom: 4px;
 }
 .stat-card .value { font-size: 1.55rem; font-weight: 700; color: #1a3a2a; line-height: 1.1; }
 .stat-card .sub   { font-size: 0.74rem; color: #9ab3a5; margin-top: 2px; }
@@ -111,25 +79,17 @@ section[data-testid="stSidebar"] label {
 .stat-card.highlight .value { color: #ffffff; }
 .stat-card.highlight .sub   { color: #7aaa8f; }
 
-/* ── Section header ── */
 .section-hdr {
-    font-size: 0.72rem; font-weight: 700;
-    letter-spacing: 0.08em; text-transform: uppercase;
-    color: #4a7a5a; padding-bottom: 6px;
-    border-bottom: 1px solid #d8e8dd;
-    margin-bottom: 0.9rem; margin-top: 0.3rem;
+    font-size: 0.72rem; font-weight: 700; letter-spacing: 0.08em;
+    text-transform: uppercase; color: #4a7a5a; padding-bottom: 6px;
+    border-bottom: 1px solid #d8e8dd; margin-bottom: 0.9rem; margin-top: 0.3rem;
 }
 
-/* ── Panel ── */
 .panel {
-    background: #ffffff; border-radius: 12px;
-    border: 1px solid #e4ebe6;
-    padding: 1.3rem 1.4rem;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.04);
-    height: 100%;
+    background: #ffffff; border-radius: 12px; border: 1px solid #e4ebe6;
+    padding: 1.3rem 1.4rem; box-shadow: 0 1px 4px rgba(0,0,0,0.04); height: 100%;
 }
 
-/* ── Progress bar ── */
 .prog-wrap { margin-bottom: 10px; }
 .prog-label {
     display: flex; justify-content: space-between;
@@ -138,7 +98,6 @@ section[data-testid="stSidebar"] label {
 .prog-track { background: #e8f0ec; border-radius: 6px; height: 7px; overflow: hidden; }
 .prog-fill  { height: 7px; border-radius: 6px; }
 
-/* ── Tip row ── */
 .tip-row {
     display: flex; align-items: flex-start; gap: 10px;
     padding: 9px 0; border-bottom: 1px solid #f0f5f2;
@@ -147,7 +106,6 @@ section[data-testid="stSidebar"] label {
 .tip-row:last-child { border-bottom: none; }
 .tip-dot { width:6px; height:6px; border-radius:50%; background:#2d7a46; margin-top:7px; flex-shrink:0; }
 
-/* ── Req row ── */
 .req-row {
     display: flex; justify-content: space-between; align-items: center;
     padding: 8px 0; border-bottom: 1px solid #f0f5f2; font-size: 0.84rem;
@@ -156,7 +114,6 @@ section[data-testid="stSidebar"] label {
 .req-key { color: #7a9485; font-weight: 500; }
 .req-val { color: #1a3a2a; font-weight: 600; }
 
-/* ── Crop banner ── */
 .crop-banner {
     background: linear-gradient(120deg, #1a3a2a 0%, #2d5a3d 100%);
     border-radius: 14px; padding: 1.4rem 1.8rem;
@@ -172,7 +129,6 @@ section[data-testid="stSidebar"] label {
     font-size:0.76rem; font-weight:600; margin-top:6px;
 }
 
-/* ── Welcome ── */
 .welcome-title { font-size:2rem; font-weight:700; color:#1a3a2a; margin-bottom:4px; }
 .welcome-sub   { color:#6a9478; font-size:0.94rem; margin-bottom:2rem; }
 .how-card {
@@ -194,26 +150,15 @@ section[data-testid="stSidebar"] label {
 .crop-mini .cname { font-size:0.82rem; font-weight:600; color:#1a3a2a; margin:4px 0 2px; }
 .crop-mini .msp   { font-size:0.72rem; color:#7a9485; }
 
-/* ── Footer ── */
 .footer-bar {
-    margin-top:2.5rem; padding-top:1rem;
-    border-top:1px solid #d8e8dd;
+    margin-top:2.5rem; padding-top:1rem; border-top:1px solid #d8e8dd;
     font-size:0.74rem; color:#9ab3a5;
     display:flex; justify-content:space-between; flex-wrap:wrap; gap:4px;
 }
 
 #MainMenu, footer, header { visibility: hidden; }
-
-[data-testid="stMetricValue"] {
-    color: #1a3a2a !important;
-    opacity: 1 !important;
-}
-
-[data-testid="stMetricLabel"] {
-    color: #4a7a5a !important;
-    opacity: 1 !important;
-}
-
+[data-testid="stMetricValue"] { color: #1a3a2a !important; opacity: 1 !important; }
+[data-testid="stMetricLabel"] { color: #4a7a5a !important; opacity: 1 !important; }
 </style>
 """,
     unsafe_allow_html=True,
@@ -221,21 +166,22 @@ section[data-testid="stSidebar"] label {
 
 
 # ══════════════════════════════════════════════
-#  MODEL
+#  MODEL + DATA LOAD
 # ══════════════════════════════════════════════
 @st.cache_resource
 def load_model():
     try:
-        return joblib.load("model.pkl")
+        m = joblib.load("model.pkl")
+        meta = joblib.load("model_meta.pkl")
+        return m, meta
     except Exception:
-        return None
+        return None, {}
 
 
-model = load_model()
-
+model, model_meta = load_model()
 
 # ══════════════════════════════════════════════
-#  DATA CONSTANTS
+#  CROP DATABASE  (18 crops from real data)
 # ══════════════════════════════════════════════
 CROPS = {
     "Rice": {
@@ -243,40 +189,252 @@ CROPS = {
         "rain": (150, 300),
         "humidity": (60, 100),
         "months": [6, 7, 8, 9],
-        "price": 20,
+        "season": "Kharif",
+        "price": 21.83,
         "emoji": "🌾",
+        "tips": [
+            "Maintain 5–10 cm standing water during early vegetative stage.",
+            "Apply nitrogen in 3 splits — basal, tillering, and panicle initiation.",
+            "Use SRI method to improve yield by 20–30% with less water.",
+        ],
     },
     "Wheat": {
         "temp": (10, 25),
         "rain": (50, 100),
-        "humidity": (40, 60),
+        "humidity": (40, 65),
         "months": [10, 11, 12, 1],
-        "price": 25,
+        "season": "Rabi",
+        "price": 22.75,
         "emoji": "🌿",
+        "tips": [
+            "Sow between Nov 1–15 in North India for optimum yield.",
+            "Irrigate at crown root initiation, tillering, jointing & grain fill.",
+            "Use disease-resistant varieties like HD-2967 or PBW-343.",
+        ],
     },
     "Maize": {
-        "temp": (21, 30),
-        "rain": (50, 150),
-        "humidity": (40, 70),
+        "temp": (21, 32),
+        "rain": (60, 150),
+        "humidity": (40, 75),
         "months": [6, 7, 8],
-        "price": 18,
+        "season": "Kharif",
+        "price": 18.35,
         "emoji": "🌽",
+        "tips": [
+            "Target 60,000–65,000 plants per hectare for best canopy.",
+            "Apply 120 kg N/ha in 3 equal splits at sowing, knee-high, and tasseling.",
+            "Ensure drainage — maize cannot tolerate waterlogging for 24 hours.",
+        ],
     },
-    "Arhar": {
+    "Arhar/Tur": {
         "temp": (25, 35),
-        "rain": (40, 100),
-        "humidity": (30, 60),
+        "rain": (40, 120),
+        "humidity": (30, 65),
         "months": [6, 7, 8, 9],
-        "price": 70,
+        "season": "Kharif",
+        "price": 70.00,
         "emoji": "🫘",
+        "tips": [
+            "Intercrop with soybean or groundnut for better land-use efficiency.",
+            "Seed inoculation with Rhizobium reduces nitrogen need by 25 kg/ha.",
+            "Harvest when 75–80% of pods turn brown to minimise shattering.",
+        ],
     },
     "Sugarcane": {
         "temp": (25, 35),
         "rain": (100, 250),
-        "humidity": (50, 80),
+        "humidity": (50, 85),
         "months": [2, 3, 4, 5],
-        "price": 3,
+        "season": "Whole Year",
+        "price": 3.40,
         "emoji": "🪵",
+        "tips": [
+            "Ratoon cropping reduces input cost by 30–40%.",
+            "Drip irrigation + fertigation improves water-use efficiency by 35%.",
+            "Trash mulching after harvest suppresses weeds and retains moisture.",
+        ],
+    },
+    "Bajra": {
+        "temp": (25, 40),
+        "rain": (30, 80),
+        "humidity": (20, 55),
+        "months": [6, 7, 8],
+        "season": "Kharif",
+        "price": 23.50,
+        "emoji": "🌾",
+        "tips": [
+            "Best suited for arid & semi-arid regions with low rainfall.",
+            "Apply 60 kg N/ha split into 2 doses for best grain filling.",
+            "Harvest when grains are hard and panicles turn grey-brown.",
+        ],
+    },
+    "Jowar": {
+        "temp": (25, 38),
+        "rain": (40, 100),
+        "humidity": (25, 60),
+        "months": [6, 7, 8],
+        "season": "Kharif",
+        "price": 28.40,
+        "emoji": "🌿",
+        "tips": [
+            "Dual-purpose crop — grain and fodder both have high value.",
+            "Apply 80 kg N/ha; split improves grain weight significantly.",
+            "Deep black soils of Deccan give best Jowar yields.",
+        ],
+    },
+    "Groundnut": {
+        "temp": (22, 33),
+        "rain": (50, 120),
+        "humidity": (40, 70),
+        "months": [6, 7, 8],
+        "season": "Kharif",
+        "price": 55.50,
+        "emoji": "🥜",
+        "tips": [
+            "Light sandy loam soil with good drainage is ideal.",
+            "Apply gypsum (400 kg/ha) at pegging stage for better pod fill.",
+            "Maintain soil moisture at peg zone — critical for yield.",
+        ],
+    },
+    "Gram": {
+        "temp": (10, 25),
+        "rain": (40, 80),
+        "humidity": (30, 55),
+        "months": [10, 11, 12],
+        "season": "Rabi",
+        "price": 53.40,
+        "emoji": "🫘",
+        "tips": [
+            "Needs cool dry weather; excess moisture causes wilt disease.",
+            "Inoculate seed with Rhizobium for better nitrogen fixation.",
+            "Avoid irrigation after flowering to prevent excessive vegetative growth.",
+        ],
+    },
+    "Rapeseed &Mustard": {
+        "temp": (10, 25),
+        "rain": (40, 80),
+        "humidity": (35, 60),
+        "months": [10, 11, 12],
+        "season": "Rabi",
+        "price": 52.50,
+        "emoji": "🌼",
+        "tips": [
+            "Sow after first week of October in North India.",
+            "Apply 1 kg boron/ha to improve seed set and oil content.",
+            "Monitor aphid population — spray only when 30+ aphids/plant.",
+        ],
+    },
+    "Soyabean": {
+        "temp": (22, 32),
+        "rain": (60, 150),
+        "humidity": (50, 80),
+        "months": [6, 7, 8],
+        "season": "Kharif",
+        "price": 39.50,
+        "emoji": "🫘",
+        "tips": [
+            "Well-drained loamy soil with pH 6–7 gives best yield.",
+            "Inoculate with Bradyrhizobium for nitrogen fixation.",
+            "Harvest at 92–95% pod maturity to avoid shattering losses.",
+        ],
+    },
+    "Potato": {
+        "temp": (15, 25),
+        "rain": (50, 120),
+        "humidity": (55, 85),
+        "months": [10, 11, 12, 1],
+        "season": "Rabi",
+        "price": 18.00,
+        "emoji": "🥔",
+        "tips": [
+            "Plant certified seed tubers of 30–40 g for uniform germination.",
+            "Earthing up at 25–30 DAS improves tuber development.",
+            "Late blight is major threat — spray mancozeb at first sign.",
+        ],
+    },
+    "Onion": {
+        "temp": (13, 28),
+        "rain": (50, 120),
+        "humidity": (40, 70),
+        "months": [10, 11, 12, 1, 2],
+        "season": "Rabi",
+        "price": 15.00,
+        "emoji": "🧅",
+        "tips": [
+            "Transplant 6–7 week old seedlings for better bulb formation.",
+            "Stop irrigation 10–12 days before harvest for proper curing.",
+            "Store in well-ventilated sheds to reduce post-harvest losses.",
+        ],
+    },
+    "Cotton(lint)": {
+        "temp": (25, 38),
+        "rain": (60, 150),
+        "humidity": (40, 70),
+        "months": [5, 6, 7],
+        "season": "Kharif",
+        "price": 67.00,
+        "emoji": "☁️",
+        "tips": [
+            "Bt cotton controls bollworm but needs refuge strips.",
+            "Apply potash (60 kg K₂O/ha) to improve fiber quality.",
+            "Monitor for whitefly and pink bollworm regularly.",
+        ],
+    },
+    "Moong(Green Gram)": {
+        "temp": (25, 35),
+        "rain": (40, 90),
+        "humidity": (30, 65),
+        "months": [6, 7, 3, 4],
+        "season": "Kharif",
+        "price": 85.60,
+        "emoji": "🫘",
+        "tips": [
+            "Short-duration crop (60–70 days) fits well in rice-wheat rotation.",
+            "Rhizobium inoculation reduces fertilizer requirement.",
+            "Harvest in 2–3 pickings as pods mature at different times.",
+        ],
+    },
+    "Barley": {
+        "temp": (8, 22),
+        "rain": (40, 80),
+        "humidity": (30, 55),
+        "months": [10, 11, 12],
+        "season": "Rabi",
+        "price": 17.35,
+        "emoji": "🌾",
+        "tips": [
+            "Most drought-tolerant cereal for Rabi season.",
+            "Good option in saline/alkali soils where wheat fails.",
+            "Apply 60 kg N/ha for feed barley; lower for malt barley.",
+        ],
+    },
+    "Guar seed": {
+        "temp": (25, 40),
+        "rain": (30, 80),
+        "humidity": (20, 55),
+        "months": [7, 8, 9],
+        "season": "Kharif",
+        "price": 45.00,
+        "emoji": "🌿",
+        "tips": [
+            "Very drought-tolerant; ideal for arid Rajasthan conditions.",
+            "Guar gum has high export demand — adds farm income premium.",
+            "Apply phosphorus (40 kg P₂O₅/ha) for good root nodulation.",
+        ],
+    },
+    "Urad": {
+        "temp": (25, 35),
+        "rain": (40, 100),
+        "humidity": (35, 65),
+        "months": [6, 7, 8],
+        "season": "Kharif",
+        "price": 68.00,
+        "emoji": "🫘",
+        "tips": [
+            "Sensitive to waterlogging — avoid heavy clay soils.",
+            "Short-duration (65–70 days) crop, good for crop rotation.",
+            "Rhizobium inoculation can fix 40–50 kg N/ha.",
+        ],
     },
 }
 
@@ -296,6 +454,11 @@ STATES = [
     "Odisha",
     "Assam",
     "Jharkhand",
+    "Telangana",
+    "Chhattisgarh",
+    "Uttarakhand",
+    "Himachal Pradesh",
+    "Jammu and Kashmir",
 ]
 
 MONTHS = {
@@ -313,32 +476,48 @@ MONTHS = {
     12: "December",
 }
 
-TIPS = {
-    "Rice": [
-        "Maintain 5–10 cm standing water during early vegetative stage for best germination.",
-        "Adopt SRI (System of Rice Intensification) to improve yield by 20–30% with less water.",
-        "Apply nitrogen fertilizer in 3 equal splits — basal, tillering, and panicle initiation.",
-    ],
-    "Wheat": [
-        "Sow between November 1–15 in North India for optimum yield potential.",
-        "Irrigate at crown root initiation (21 DAS), tillering, jointing, and grain filling stages.",
-        "Use certified disease-resistant varieties like HD-2967 or PBW-343.",
-    ],
-    "Maize": [
-        "Target 60,000–65,000 plants per hectare for optimum canopy and light interception.",
-        "Apply 120 kg N/ha in 3 equal splits at sowing, knee-high stage, and tasseling.",
-        "Ensure proper field drainage — maize cannot tolerate waterlogging even for 24 hours.",
-    ],
-    "Arhar": [
-        "Intercropping with soybean or groundnut improves land-use efficiency significantly.",
-        "Seed inoculation with Rhizobium culture can reduce nitrogen fertilizer need by 25 kg/ha.",
-        "Harvest when 75–80% of pods have turned brown to minimise shattering losses.",
-    ],
-    "Sugarcane": [
-        "Ratoon cropping reduces input cost by 30–40% while yielding 80–90% of plant crop.",
-        "Drip irrigation combined with fertigation can improve water-use efficiency by 35%.",
-        "Trash mulching after harvest suppresses weeds and retains moisture during dry spells.",
-    ],
+CROP_YIELD_AVG = {
+    "Rice": 1.98,
+    "Wheat": 2.09,
+    "Maize": 2.14,
+    "Arhar/Tur": 0.80,
+    "Sugarcane": 45.7,
+    "Bajra": 1.18,
+    "Jowar": 1.05,
+    "Groundnut": 1.20,
+    "Gram": 0.84,
+    "Rapeseed &Mustard": 0.77,
+    "Soyabean": 1.05,
+    "Potato": 12.8,
+    "Onion": 11.5,
+    "Cotton(lint)": 1.73,
+    "Moong(Green Gram)": 0.46,
+    "Barley": 1.84,
+    "Guar seed": 0.98,
+    "Urad": 0.50,
+}
+
+STATE_YIELD_AVG = {
+    "Punjab": 8.20,
+    "Haryana": 8.20,
+    "West Bengal": 5.33,
+    "Uttar Pradesh": 5.29,
+    "Gujarat": 5.73,
+    "Maharashtra": 4.40,
+    "Andhra Pradesh": 4.50,
+    "Karnataka": 4.43,
+    "Tamil Nadu": 4.20,
+    "Madhya Pradesh": 3.21,
+    "Rajasthan": 2.93,
+    "Bihar": 3.51,
+    "Odisha": 3.73,
+    "Assam": 3.50,
+    "Jharkhand": 2.73,
+    "Telangana": 4.50,
+    "Chhattisgarh": 2.18,
+    "Uttarakhand": 3.32,
+    "Himachal Pradesh": 1.95,
+    "Jammu and Kashmir": 1.56,
 }
 
 
@@ -361,76 +540,78 @@ def get_season_label(m):
     return "Zaid"
 
 
-def encode_crop(c):
-    return list(CROPS.keys()).index(c) + 1
+def get_crop_avg(crop):
+    if model_meta.get("crop_avg_map"):
+        return model_meta["crop_avg_map"].get(crop, CROP_YIELD_AVG.get(crop, 2.0))
+    return CROP_YIELD_AVG.get(crop, 2.0)
 
 
-def encode_state(s):
-    return (
-        ["Rajasthan", "Maharashtra", "Punjab"].index(s) + 1
-        if s in ["Rajasthan", "Maharashtra", "Punjab"]
-        else 0
-    )
+def get_state_avg_val(state):
+    if model_meta.get("state_avg_map"):
+        return model_meta["state_avg_map"].get(state, STATE_YIELD_AVG.get(state, 3.0))
+    return STATE_YIELD_AVG.get(state, 3.0)
 
 
-def crop_avg(c):
-    return {"Rice": 60, "Wheat": 50, "Maize": 45, "Arhar": 35, "Sugarcane": 80}.get(
-        c, 50
-    )
+def encode_crop(crop):
+    cats = model_meta.get("crop_cats", [])
+    return cats.index(crop) if crop in cats else len(cats)
 
 
-def state_avg(s):
-    return {"Rajasthan": 40, "Maharashtra": 55, "Punjab": 70}.get(s, 50)
+def encode_state(state):
+    cats = model_meta.get("state_cats", [])
+    return cats.index(state) if state in cats else len(cats)
 
 
 def get_weather(city):
-
-    # ❌ API key missing
     if not WEATHER_API_KEY:
-        st.error("API key missing! Add it in secrets.toml")
         return None, None, None, False
-
     try:
         url = (
             f"https://api.openweathermap.org/data/2.5/weather"
             f"?q={city}&appid={WEATHER_API_KEY}&units=metric"
         )
-
         d = requests.get(url, timeout=6).json()
-
-        # ❌ API error / wrong city
         if d.get("cod") != 200:
-            st.error(f"API Error: {d.get('message')}")
+            st.error(f"Weather API: {d.get('message', 'Unknown error')}")
             return None, None, None, False
-
         temp = float(d["main"]["temp"])
         humidity = float(d["main"]["humidity"])
-
-        # ✅ rainfall safe handling
-        rain = float(
-            d.get("rain", {}).get("1h") or 
-            d.get("rain", {}).get("3h") or 
-            0
-        )
-
+        rain = float(d.get("rain", {}).get("1h") or d.get("rain", {}).get("3h") or 0)
         return temp, humidity, rain, True
-
     except Exception:
-        st.error("Weather API failed")
         return None, None, None, False
 
 
 def analyze_crop(temp, rain, humidity, month):
     res = {}
     for crop, d in CROPS.items():
-        s = 30 if d["temp"][0] <= temp <= d["temp"][1] else 0
-        s += 30 if d["rain"][0] <= rain <= d["rain"][1] else 0
-        s += 20 if d["humidity"][0] <= humidity <= d["humidity"][1] else 0
+        s = 0
+        t_lo, t_hi = d["temp"]
+        if t_lo <= temp <= t_hi:
+            s += 30
+        elif temp < t_lo:
+            s += max(0, 30 - int((t_lo - temp) * 2))
+        else:
+            s += max(0, 30 - int((temp - t_hi) * 2))
 
-        # ✅ FIXED (month ka strong effect)
-        s += 20 if month in d["months"] else -40
+        r_lo, r_hi = d["rain"]
+        if r_lo <= rain <= r_hi:
+            s += 25
+        elif rain < r_lo:
+            s += max(0, 25 - int((r_lo - rain) * 0.3))
+        else:
+            s += max(0, 25 - int((rain - r_hi) * 0.3))
 
-        res[crop] = s
+        h_lo, h_hi = d["humidity"]
+        if h_lo <= humidity <= h_hi:
+            s += 20
+
+        if month in d["months"]:
+            s += 25
+        else:
+            s -= 35
+
+        res[crop] = max(0, s)
 
     return max(res, key=res.get), res
 
@@ -450,21 +631,39 @@ def predict_yield(area, temp, rain, humidity, crop, state, month):
                     "crop": encode_crop(crop),
                     "state": encode_state(state),
                     "season": get_season_id(month),
-                    "crop_avg": crop_avg(crop),
-                    "state_avg": state_avg(state),
+                    "crop_avg": get_crop_avg(crop),
+                    "state_avg": get_state_avg_val(state),
                 }
             ]
         )
         yt = np.expm1(model.predict(df)[0])
-        return round(max(0.5, min(yt, area * 10)), 2), 80
+        yt = max(0.5, min(yt, area * 10))
+
+        c = CROPS.get(crop, {})
+        matches = sum(
+            [
+                c.get("temp", (0, 100))[0] <= temp <= c.get("temp", (0, 100))[1],
+                c.get("rain", (0, 500))[0] <= rain <= c.get("rain", (0, 500))[1],
+                c.get("humidity", (0, 100))[0]
+                <= humidity
+                <= c.get("humidity", (0, 100))[1],
+                month in c.get("months", []),
+            ]
+        )
+        confidence = 60 + matches * 8
+
+        return round(yt, 2), int(confidence)
     except Exception:
         return None, 40
 
 
 def calc_profit(crop, yield_kg):
-    p = CROPS[crop]["price"]
-    inc = yield_kg * p
-    return int(inc), int(inc - yield_kg * 5)
+    price = CROPS[crop]["price"]
+    income = yield_kg * price
+    cost = yield_kg * 8
+    profit = income - cost
+    return int(income), int(cost), int(profit)
+
 
 # ══════════════════════════════════════════════
 #  SIDEBAR
@@ -524,7 +723,7 @@ with st.sidebar:
         st.markdown("**Humidity (%)**")
         manual_humidity = st.slider("Hum", 10, 100, 60, label_visibility="collapsed")
         st.markdown("**Rainfall (mm)**")
-        manual_rain = st.slider("Rain", 0, 300, 80, label_visibility="collapsed")
+        manual_rain = st.slider("Rain", 0, 350, 80, label_visibility="collapsed")
 
     st.markdown("<hr style='margin:0.8rem 0;'>", unsafe_allow_html=True)
     predict_btn = st.button("Run Prediction", use_container_width=True)
@@ -534,7 +733,8 @@ with st.sidebar:
     <div style='font-size:0.68rem;color:#3a5c47;margin-top:0.8rem;line-height:1.65;'>
         Weather: OpenWeatherMap API<br>
         Model: GradientBoosting Regressor<br>
-        Training data: 246,091 crop records
+        Training data: 246,091+ crop records<br>
+        Crops supported: 18
     </div>
     """,
         unsafe_allow_html=True,
@@ -550,7 +750,7 @@ if not predict_btn:
     <div class='welcome-title'>Crop Yield Prediction System</div>
     <div class='welcome-sub'>
         Enter your farm details in the sidebar to get an ML-based yield estimate,
-        income forecast, and crop suitability report.
+        income forecast, and crop suitability report for 18 major Indian crops.
     </div>
     """,
         unsafe_allow_html=True,
@@ -589,20 +789,28 @@ if not predict_btn:
 
     st.markdown("<div style='height:1.4rem'></div>", unsafe_allow_html=True)
     st.markdown(
-        "<div class='section-hdr'>Supported Crops</div>", unsafe_allow_html=True
+        "<div class='section-hdr'>Supported Crops (18)</div>", unsafe_allow_html=True
     )
-    cols = st.columns(len(CROPS))
-    for i, (crop, info) in enumerate(CROPS.items()):
-        with cols[i]:
-            st.markdown(
-                f"""
-            <div class='crop-mini'>
-                <div class='ico'>{info['emoji']}</div>
-                <div class='cname'>{crop}</div>
-                <div class='msp'>MSP ₹{info['price']}/kg</div>
-            </div>""",
-                unsafe_allow_html=True,
-            )
+
+    # Show all 18 crops in a grid — 6 per row
+    crop_list = list(CROPS.items())
+    for row_start in range(0, len(crop_list), 6):
+        cols = st.columns(6)
+        for i, col in enumerate(cols):
+            idx = row_start + i
+            if idx < len(crop_list):
+                crop_name, info = crop_list[idx]
+                with col:
+                    st.markdown(
+                        f"""
+                    <div class='crop-mini'>
+                        <div class='ico'>{info['emoji']}</div>
+                        <div class='cname'>{crop_name}</div>
+                        <div class='msp'>MSP ₹{info['price']}/kg</div>
+                    </div>""",
+                        unsafe_allow_html=True,
+                    )
+
     st.stop()
 
 
@@ -610,26 +818,42 @@ if not predict_btn:
 #  PREDICTION ENGINE
 # ══════════════════════════════════════════════
 with st.spinner("Fetching weather and running prediction…"):
+
     if use_manual:
-        temp, humidity, rain, live = manual_temp, manual_humidity, manual_rain, False
+        # ✅ Manual input
+        temp, humidity, rain, live = manual_temp, manual_humidity, manual_rain, True
+
     else:
+        # 🌐 Try API
         temp, humidity, rain, live = get_weather(city)
 
+        # 🔁 If API fails → switch to manual
+        if temp is None:
+            st.warning("⚠️ API failed → switching to manual mode")
+
+            temp = st.slider("Temperature (°C)", 5, 50, 28)
+            humidity = st.slider("Humidity (%)", 10, 100, 60)
+            rain = st.slider("Rainfall (mm)", 0, 350, 80)
+
+            live = True
+
     best_crop, scores = analyze_crop(temp, rain, humidity, month_num)
+
     yield_ton, confidence = predict_yield(
         area, temp, rain, humidity, best_crop, state, month_num
     )
 
+    # ✅ FIXED INDENT
     if yield_ton is None:
-        yield_ton, confidence = round(area * 2, 2), 50
+        st.error("❌ Model failed — no prediction available")
+        st.stop()
 
     yield_kg = yield_ton * 1000
-    income, profit = calc_profit(best_crop, yield_kg)
-    cost = income - profit
+    income, cost, profit = calc_profit(best_crop, yield_kg)
     crop_info = CROPS[best_crop]
-    weather_src = "Live" if live else "Estimated"
 
-
+    # ✅ FIXED INDENT
+    weather_src = "Manual" if use_manual or not live else "Live API"
 # ══════════════════════════════════════════════
 #  BANNER
 # ══════════════════════════════════════════════
@@ -669,7 +893,7 @@ for col, cls, label, val, sub in zip(
         f"{int(yield_kg):,} kg total",
         f"@ ₹{crop_info['price']}/kg MSP",
         "After input costs",
-        "@ ₹5/kg estimate",
+        "@ ₹8/kg estimate",
         f"Across {area} ha",
     ],
 ):
@@ -688,11 +912,10 @@ st.markdown("<div style='height:1.2rem'></div>", unsafe_allow_html=True)
 
 
 # ══════════════════════════════════════════════
-#  ROW 2 — Weather | Requirements | Profit
+#  ROW 2 — Weather | Requirements | Profit Chart
 # ══════════════════════════════════════════════
 cw, cr, cp = st.columns([1, 1, 1])
 
-# Weather Panel
 with cw:
     st.markdown("<div class='panel'>", unsafe_allow_html=True)
     st.markdown(
@@ -701,7 +924,7 @@ with cw:
     w1, w2, w3 = st.columns([1, 1, 1.3])
     w1.metric("Temp", f"{round(temp)}°C")
     w2.metric("Humidity", f"{int(humidity)}%")
-    w3.metric("Rainfall", f"{int(rain)}mm")
+    w3.metric("Rainfall", f"{int(rain)} mm")
     st.markdown(
         f"<p style='font-size:0.77rem;color:#7a9485;margin:8px 0 12px;'>"
         f"Season: <b style='color:#1a3a2a;'>{get_season_label(month_num)}</b>"
@@ -714,20 +937,20 @@ with cw:
         "Suitability vs Ideal Range</div>",
         unsafe_allow_html=True,
     )
-    for name, (val, lo, hi) in {
+    for name, (cur_val, lo, hi) in {
         "Temperature": (temp, crop_info["temp"][0], crop_info["temp"][1]),
         "Rainfall": (rain, crop_info["rain"][0], crop_info["rain"][1]),
         "Humidity": (humidity, crop_info["humidity"][0], crop_info["humidity"][1]),
     }.items():
-        in_range = lo <= val <= hi
-        pct = int(np.clip((val - lo) / max(hi - lo, 1) * 100, 0, 100))
+        in_range = lo <= cur_val <= hi
+        pct = int(np.clip((cur_val - lo) / max(hi - lo, 1) * 100, 0, 100))
         color = "#2d7a46" if in_range else "#c0392b"
         tag = "✓ In range" if in_range else "✗ Out of range"
         st.markdown(
             f"""
         <div class='prog-wrap'>
             <div class='prog-label'>
-                <span>{name} — {val:.0f}
+                <span>{name} — {cur_val:.0f}
                     <span style='color:#9ab3a5;font-size:0.7rem;'>(ideal {lo}–{hi})</span>
                 </span>
                 <span style='color:{color};font-size:0.7rem;font-weight:600;'>{tag}</span>
@@ -740,7 +963,6 @@ with cw:
         )
     st.markdown("</div>", unsafe_allow_html=True)
 
-# Crop Requirements Panel
 with cr:
     st.markdown("<div class='panel'>", unsafe_allow_html=True)
     st.markdown(
@@ -751,9 +973,10 @@ with cr:
         ("Temperature", f"{crop_info['temp'][0]}–{crop_info['temp'][1]} °C"),
         ("Rainfall", f"{crop_info['rain'][0]}–{crop_info['rain'][1]} mm"),
         ("Humidity", f"{crop_info['humidity'][0]}–{crop_info['humidity'][1]} %"),
-        ("Sowing Months", ", ".join([MONTHS[m][:3] for m in crop_info["months"]])),
+        ("Sowing Months", ", ".join([MONTHS[m][:3] for m in crop_info["months"][:4]])),
+        ("Season", crop_info["season"]),
         ("MSP Price", f"₹ {crop_info['price']} / kg"),
-        ("Season", get_season_label(month_num)),
+        ("Avg Yield", f"{get_crop_avg(best_crop):.2f} T/ha (historical)"),
     ]:
         st.markdown(
             f"""
@@ -765,7 +988,6 @@ with cr:
         )
     st.markdown("</div>", unsafe_allow_html=True)
 
-# Profit Chart Panel
 with cp:
     st.markdown("<div class='panel'>", unsafe_allow_html=True)
     st.markdown(
@@ -805,23 +1027,25 @@ st.markdown("<div style='height:0.5rem'></div>", unsafe_allow_html=True)
 
 
 # ══════════════════════════════════════════════
-#  ROW 3 — Comparison Chart + Tips
+#  ROW 3 — Suitability Chart + Tips
 # ══════════════════════════════════════════════
 cc, ct = st.columns([3, 2])
 
 with cc:
     st.markdown("<div class='panel'>", unsafe_allow_html=True)
     st.markdown(
-        "<div class='section-hdr'>Crop Suitability Comparison</div>",
+        "<div class='section-hdr'>Crop Suitability Comparison (Top 10)</div>",
         unsafe_allow_html=True,
     )
 
-    crop_names = list(scores.keys())
-    crop_scores = list(scores.values())
+    # Show top-10 by score for readability (18 crops can crowd chart)
+    top10 = sorted(scores.items(), key=lambda x: -x[1])[:10]
+    crop_names = [c for c, _ in top10]
+    crop_scores = [s for _, s in top10]
     bar_colors = ["#1a3a2a" if c == best_crop else "#ccddd4" for c in crop_names]
     labels_disp = [f"{CROPS[c]['emoji']}  {c}" for c in crop_names]
 
-    fig2, ax2 = plt.subplots(figsize=(7, 3))
+    fig2, ax2 = plt.subplots(figsize=(7, 3.2))
     fig2.patch.set_facecolor("white")
     ax2.set_facecolor("white")
     bars2 = ax2.bar(
@@ -839,17 +1063,17 @@ with cc:
             str(val),
             ha="center",
             va="bottom",
-            fontsize=9.5,
+            fontsize=8.5,
             fontweight="700",
             color="#1a3a2a" if val == max(crop_scores) else "#7a9485",
         )
-    ax2.set_ylim(0, 118)
+    ax2.set_ylim(0, max(crop_scores) * 1.25 + 5)
     for sp in ["top", "right", "left"]:
         ax2.spines[sp].set_visible(False)
     ax2.spines["bottom"].set_color("#e4ebe6")
     ax2.tick_params(bottom=False, left=False)
     ax2.yaxis.set_visible(False)
-    ax2.xaxis.set_tick_params(labelsize=9, labelcolor="#3a5c47")
+    ax2.xaxis.set_tick_params(labelsize=8, labelcolor="#3a5c47", rotation=15)
     plt.tight_layout(pad=0.4)
     st.pyplot(fig2, use_container_width=True)
     st.markdown("</div>", unsafe_allow_html=True)
@@ -860,7 +1084,7 @@ with ct:
         f"<div class='section-hdr'>Agronomic Tips — {best_crop}</div>",
         unsafe_allow_html=True,
     )
-    for tip in TIPS.get(best_crop, []):
+    for tip in crop_info.get("tips", []):
         st.markdown(
             f"""
         <div class='tip-row'>
@@ -875,38 +1099,39 @@ st.markdown("<div style='height:0.5rem'></div>", unsafe_allow_html=True)
 
 
 # ══════════════════════════════════════════════
-#  FULL TABLE
+#  FULL TABLE — All 18 crops
 # ══════════════════════════════════════════════
 st.markdown(
     "<div class='section-hdr'>All Crops — Detailed Score Breakdown</div>",
     unsafe_allow_html=True,
 )
+
 rows = []
 for crop, score in sorted(scores.items(), key=lambda x: -x[1]):
     info = CROPS[crop]
     suit = (
         "Excellent"
-        if score >= 80
-        else "Good" if score >= 60 else "Moderate" if score >= 40 else "Poor"
+        if score >= 70
+        else "Good" if score >= 50 else "Moderate" if score >= 30 else "Poor"
     )
     rows.append(
         {
             "Crop": f"{info['emoji']}  {crop}",
             "Score / 100": score,
             "Suitability": suit,
+            "Season": info["season"],
             "Temp Range": f"{info['temp'][0]}–{info['temp'][1]} °C",
             "Rainfall": f"{info['rain'][0]}–{info['rain'][1]} mm",
             "Humidity": f"{info['humidity'][0]}–{info['humidity'][1]} %",
-            "Season": (
-                "Kharif"
-                if info["months"][0] in [6, 7, 8, 9]
-                else "Rabi" if info["months"][0] in [10, 11, 12, 1] else "Zaid"
-            ),
             "MSP ₹/kg": info["price"],
+            "Avg Yield T/ha": round(get_crop_avg(crop), 2),
         }
     )
+
 st.dataframe(
-    pd.DataFrame(rows).reset_index(drop=True), use_container_width=True, hide_index=True
+    pd.DataFrame(rows).reset_index(drop=True),
+    use_container_width=True,
+    hide_index=True,
 )
 
 
@@ -917,7 +1142,7 @@ st.markdown(
     f"""
 <div class='footer-bar'>
     <span>Crop Yield Prediction System &nbsp;·&nbsp; GradientBoosting Regressor</span>
-    <span>Training Data: Govt. of India · 246,091 records &nbsp;·&nbsp; Weather: OpenWeatherMap ({weather_src})</span>
+    <span>Training Data: Govt. of India · 246,091+ records &nbsp;·&nbsp; Weather: OpenWeatherMap ({weather_src})</span>
     <span>Predictions are indicative. Actual yield depends on soil, irrigation, and practices.</span>
 </div>
 """,
