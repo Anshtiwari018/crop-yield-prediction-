@@ -42,7 +42,6 @@ html, body { font-family: 'Inter', sans-serif; }
     padding-top: 1.5rem;
     padding-bottom: 3rem;
     max-width: 1200px;
-    /* Mobile: reduce side padding */
     padding-left: 1rem !important;
     padding-right: 1rem !important;
 }
@@ -87,7 +86,6 @@ section[data-testid="stSidebar"] label {
 .stat-card.highlight .value { color: #ffffff; }
 .stat-card.highlight .sub   { color: #7aaa8f; }
 
-/* Mobile stat cards — responsive font */
 @media (max-width: 768px) {
     .stat-card .value { font-size: 1.15rem; }
     .stat-card .label { font-size: 0.65rem; }
@@ -205,29 +203,23 @@ section[data-testid="stSidebar"] label {
 [data-testid="stMetricValue"] { color: #1a3a2a !important; opacity: 1 !important; }
 [data-testid="stMetricLabel"] { color: #4a7a5a !important; opacity: 1 !important; }
 
-/* ── Make dataframe scroll on mobile ── */
-[data-testid="stDataFrame"] {
-    overflow-x: auto !important;
-}
+[data-testid="stDataFrame"] { overflow-x: auto !important; }
 
-/* ── Matplotlib charts — no overflow ── */
-[data-testid="stImage"] img,
-canvas {
+[data-testid="stImage"] img, canvas {
     max-width: 100% !important;
     height: auto !important;
 }
 
-/* ── Column gaps on mobile ── */
-@media (max-width: 640px) {
+@media (max-width: 768px) {
     [data-testid="stHorizontalBlock"] {
         flex-wrap: wrap !important;
+        gap: 0.6rem !important;
     }
     [data-testid="column"] {
         min-width: 45% !important;
         flex: 1 1 45% !important;
     }
 }
-</style>
 """,
     unsafe_allow_html=True,
 )
@@ -538,15 +530,22 @@ STATE_YIELD_AVG = {
 
 
 # ══════════════════════════════════════════════
+#  SESSION STATE INIT  ← FIX
+# ══════════════════════════════════════════════
+if "has_predicted" not in st.session_state:
+    st.session_state.has_predicted = False
+
+
+# ══════════════════════════════════════════════
 #  HELPERS
 # ══════════════════════════════════════════════
 def get_season_id(m):
-    if m in [6, 7, 8, 9]:   return 1
+    if m in [6, 7, 8, 9]:    return 1
     if m in [10, 11, 12, 1]: return 2
     return 0
 
 def get_season_label(m):
-    if m in [6, 7, 8, 9]:   return "Kharif"
+    if m in [6, 7, 8, 9]:    return "Kharif"
     if m in [10, 11, 12, 1]: return "Rabi"
     return "Zaid"
 
@@ -580,9 +579,9 @@ def get_weather(city):
         if d.get("cod") != 200:
             st.error(f"Weather API: {d.get('message', 'Unknown error')}")
             return None, None, None, False
-        temp = float(d["main"]["temp"])
+        temp     = float(d["main"]["temp"])
         humidity = float(d["main"]["humidity"])
-        rain = float(d.get("rain", {}).get("1h") or d.get("rain", {}).get("3h") or 0)
+        rain     = float(d.get("rain", {}).get("1h") or d.get("rain", {}).get("3h") or 0)
         return temp, humidity, rain, True
     except Exception:
         return None, None, None, False
@@ -628,8 +627,8 @@ def predict_yield(area, temp, rain, humidity, crop, state, month):
 
         c = CROPS.get(crop, {})
         matches = sum([
-            c.get("temp", (0, 100))[0] <= temp <= c.get("temp", (0, 100))[1],
-            c.get("rain", (0, 500))[0] <= rain <= c.get("rain", (0, 500))[1],
+            c.get("temp",     (0, 100))[0] <= temp     <= c.get("temp",     (0, 100))[1],
+            c.get("rain",     (0, 500))[0] <= rain     <= c.get("rain",     (0, 500))[1],
             c.get("humidity", (0, 100))[0] <= humidity <= c.get("humidity", (0, 100))[1],
             month in c.get("months", []),
         ])
@@ -639,9 +638,9 @@ def predict_yield(area, temp, rain, humidity, crop, state, month):
         return None, 40
 
 def calc_profit(crop, yield_kg):
-    price = CROPS[crop]["price"]
+    price  = CROPS[crop]["price"]
     income = yield_kg * price
-    cost = yield_kg * 8
+    cost   = yield_kg * 8
     profit = income - cost
     return int(income), int(cost), int(profit)
 
@@ -693,14 +692,17 @@ with st.sidebar:
     use_manual = st.checkbox("Override weather manually", value=False)
     if use_manual:
         st.markdown("**Temperature (°C)**")
-        manual_temp = st.slider("Temp", 5, 50, 28, label_visibility="collapsed")
+        manual_temp     = st.slider("Temp", 5, 50, 28, label_visibility="collapsed")
         st.markdown("**Humidity (%)**")
         manual_humidity = st.slider("Hum", 10, 100, 60, label_visibility="collapsed")
         st.markdown("**Rainfall (mm)**")
-        manual_rain = st.slider("Rain", 0, 350, 80, label_visibility="collapsed")
+        manual_rain     = st.slider("Rain", 0, 350, 80, label_visibility="collapsed")
 
     st.markdown("<hr style='margin:0.8rem 0;'>", unsafe_allow_html=True)
-    predict_btn = st.button("Run Prediction", use_container_width=True)
+
+    # ── FIX: session_state se button link karo ──
+    if st.button("Run Prediction", use_container_width=True):
+        st.session_state.has_predicted = True
 
     st.markdown(
         """
@@ -716,9 +718,9 @@ with st.sidebar:
 
 
 # ══════════════════════════════════════════════
-#  WELCOME SCREEN
+#  WELCOME SCREEN  ← FIX: predict_btn = True HATA DIYA
 # ══════════════════════════════════════════════
-if not predict_btn:
+if not st.session_state.has_predicted:
     st.markdown(
         """
     <div class='welcome-title'>Crop Yield Prediction System</div>
@@ -752,8 +754,6 @@ if not predict_btn:
     st.markdown("<div style='height:1.4rem'></div>", unsafe_allow_html=True)
     st.markdown("<div class='section-hdr'>Supported Crops (18)</div>", unsafe_allow_html=True)
 
-    # ── Responsive crop grid: 6 per row on desktop, 3 on mobile ──
-    # Streamlit columns auto-stack on narrow viewports
     crop_list = list(CROPS.items())
     for row_start in range(0, len(crop_list), 6):
         cols = st.columns(6)
@@ -799,9 +799,9 @@ with st.spinner("Fetching weather and running prediction…"):
         st.error("❌ Model failed — no prediction available")
         st.stop()
 
-    yield_kg = yield_ton * 1000
+    yield_kg   = yield_ton * 1000
     income, cost, profit = calc_profit(best_crop, yield_kg)
-    crop_info  = CROPS[best_crop]
+    crop_info   = CROPS[best_crop]
     weather_src = "Manual" if use_manual or not live else "Live API"
 
 
@@ -826,10 +826,8 @@ st.markdown(
 
 
 # ══════════════════════════════════════════════
-#  STAT CARDS — responsive: 2-col on mobile, 5-col on desktop
+#  STAT CARDS
 # ══════════════════════════════════════════════
-# Detect mobile via viewport not possible in Streamlit;
-# use 5 cols which auto-wrap on narrow screens via CSS above.
 c1, c2, c3, c4, c5 = st.columns(5)
 for col, cls, label, val, sub in zip(
     [c1, c2, c3, c4, c5],
@@ -889,12 +887,12 @@ with cw:
         unsafe_allow_html=True,
     )
     for name, (cur_val, lo, hi) in {
-        "Temperature": (temp, crop_info["temp"][0], crop_info["temp"][1]),
-        "Rainfall":    (rain, crop_info["rain"][0], crop_info["rain"][1]),
+        "Temperature": (temp, crop_info["temp"][0],     crop_info["temp"][1]),
+        "Rainfall":    (rain, crop_info["rain"][0],     crop_info["rain"][1]),
         "Humidity":    (humidity, crop_info["humidity"][0], crop_info["humidity"][1]),
     }.items():
         in_range = lo <= cur_val <= hi
-        pct = int(np.clip((cur_val - lo) / max(hi - lo, 1) * 100, 0, 100))
+        pct   = int(np.clip((cur_val - lo) / max(hi - lo, 1) * 100, 0, 100))
         color = "#2d7a46" if in_range else "#c0392b"
         tag   = "✓ In range" if in_range else "✗ Out of range"
         st.markdown(
@@ -920,13 +918,13 @@ with cr:
         f"<div class='section-hdr'>Requirements — {best_crop}</div>", unsafe_allow_html=True
     )
     for k, v in [
-        ("Temperature",  f"{crop_info['temp'][0]}–{crop_info['temp'][1]} °C"),
-        ("Rainfall",     f"{crop_info['rain'][0]}–{crop_info['rain'][1]} mm"),
-        ("Humidity",     f"{crop_info['humidity'][0]}–{crop_info['humidity'][1]} %"),
+        ("Temperature",   f"{crop_info['temp'][0]}–{crop_info['temp'][1]} °C"),
+        ("Rainfall",      f"{crop_info['rain'][0]}–{crop_info['rain'][1]} mm"),
+        ("Humidity",      f"{crop_info['humidity'][0]}–{crop_info['humidity'][1]} %"),
         ("Sowing Months", ", ".join([MONTHS[m][:3] for m in crop_info["months"][:4]])),
-        ("Season",       crop_info["season"]),
-        ("MSP Price",    f"₹ {crop_info['price']} / kg"),
-        ("Avg Yield",    f"{get_crop_avg(best_crop):.2f} T/ha (historical)"),
+        ("Season",        crop_info["season"]),
+        ("MSP Price",     f"₹ {crop_info['price']} / kg"),
+        ("Avg Yield",     f"{get_crop_avg(best_crop):.2f} T/ha (historical)"),
     ]:
         st.markdown(
             f"""
@@ -942,7 +940,6 @@ with cp:
     st.markdown("<div class='panel'>", unsafe_allow_html=True)
     st.markdown("<div class='section-hdr'>Revenue Breakdown</div>", unsafe_allow_html=True)
 
-    # ── Responsive chart size ──
     fig, ax = plt.subplots(figsize=(4, 3.0))
     fig.patch.set_facecolor("white")
     ax.set_facecolor("white")
@@ -963,7 +960,7 @@ with cp:
     ax.yaxis.set_tick_params(labelsize=8.5, labelcolor="#5a7a6a")
     plt.tight_layout(pad=0.4)
     st.pyplot(fig, use_container_width=True)
-    plt.close(fig)          # ← prevent memory leak on repeated runs
+    plt.close(fig)
     st.markdown("</div>", unsafe_allow_html=True)
 
 st.markdown("<div style='height:0.5rem'></div>", unsafe_allow_html=True)
@@ -981,7 +978,7 @@ with cc:
         unsafe_allow_html=True,
     )
 
-    top10 = sorted(scores.items(), key=lambda x: -x[1])[:10]
+    top10       = sorted(scores.items(), key=lambda x: -x[1])[:10]
     crop_names  = [c for c, _ in top10]
     crop_scores = [s for _, s in top10]
     bar_colors  = ["#1a3a2a" if c == best_crop else "#ccddd4" for c in crop_names]
@@ -1008,7 +1005,7 @@ with cc:
     ax2.xaxis.set_tick_params(labelsize=8, labelcolor="#3a5c47", rotation=15)
     plt.tight_layout(pad=0.4)
     st.pyplot(fig2, use_container_width=True)
-    plt.close(fig2)         # ← prevent memory leak
+    plt.close(fig2)
     st.markdown("</div>", unsafe_allow_html=True)
 
 with ct:
