@@ -55,10 +55,7 @@ section[data-testid="stSidebar"] {
     display: flex !important;
     visibility: visible !important;
     opacity: 1 !important;
-    transform: none !important;
-    translate: none !important;
-    transition: none !important;
-    position: relative !important;
+    transform: translateX(0) !important;
     min-width: 240px !important;
     max-width: 320px !important;
     width: 280px !important;
@@ -68,13 +65,14 @@ section[data-testid="stSidebar"] {
     flex-shrink: 0 !important;
 }
 
-/* Override Streamlit JS hiding sidebar on mobile */
+/* Keep sidebar visible even when Streamlit sets aria-expanded=false */
 section[data-testid="stSidebar"][aria-expanded="false"] {
+    transform: translateX(0) !important;
     display: flex !important;
     visibility: visible !important;
     opacity: 1 !important;
-    transform: none !important;
-    translate: none !important;
+    width: 280px !important;
+    min-width: 240px !important;
 }
 
 /* Hide the collapse/toggle arrow button completely */
@@ -90,39 +88,17 @@ button[aria-label="Collapse sidebar"] {
     pointer-events: none !important;
 }
 
-/* Mobile: sidebar in normal flow — stacks above main content */
+/* Mobile: keep sidebar visible, stack above content */
 @media (max-width: 768px) {
-    /* Make Streamlit's root layout stack vertically on mobile */
-    [data-testid="stAppViewContainer"] > div:first-child,
-    .appview-container,
-    .appview-container > section {
-        flex-direction: column !important;
-        display: flex !important;
-    }
-
     section[data-testid="stSidebar"] {
-        position: relative !important;
-        top: unset !important;
-        left: unset !important;
         width: 100% !important;
         max-width: 100% !important;
         min-width: unset !important;
         height: auto !important;
         min-height: unset !important;
         max-height: none !important;
-        overflow-y: visible !important;
-        z-index: auto !important;
-        box-shadow: 0 2px 12px rgba(0,0,0,0.18) !important;
         border-right: none !important;
         border-bottom: 3px solid #2d7a46 !important;
-        flex-shrink: 0 !important;
-        order: -1 !important;
-    }
-
-    /* No margin needed — sidebar is in normal flow */
-    .main .block-container {
-        margin-top: 0 !important;
-        padding-top: 1rem !important;
     }
 
     section[data-testid="stSidebar"] [data-testid="stSidebarContent"] {
@@ -727,39 +703,6 @@ def calc_profit(crop, yield_kg):
     cost   = yield_kg * 8
     profit = income - cost
     return int(income), int(cost), int(profit)
-
-
-# ── JS: Force sidebar always visible (overrides Streamlit mobile collapse) ──
-st.markdown("""
-<script>
-(function keepSidebarOpen() {
-    function forceOpen() {
-        var sb = document.querySelector('[data-testid="stSidebar"]');
-        if (!sb) return;
-        // Remove aria-expanded=false
-        if (sb.getAttribute('aria-expanded') === 'false') {
-            sb.setAttribute('aria-expanded', 'true');
-        }
-        // Remove any inline transform/translateX styles
-        var style = sb.getAttribute('style') || '';
-        if (style.includes('translateX') || style.includes('translate(')) {
-            sb.style.transform = 'none';
-            sb.style.translate = 'none';
-        }
-        // Ensure visible
-        sb.style.display = '';
-        sb.style.visibility = 'visible';
-        sb.style.opacity = '1';
-    }
-    // Run immediately and on every DOM change
-    forceOpen();
-    var obs = new MutationObserver(forceOpen);
-    obs.observe(document.body, {subtree: true, attributes: true, childList: true});
-    // Also run on interval as fallback
-    setInterval(forceOpen, 500);
-})();
-</script>
-""", unsafe_allow_html=True)
 
 
 # ══════════════════════════════════════════════
