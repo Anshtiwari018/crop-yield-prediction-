@@ -18,11 +18,11 @@ st.set_page_config(
     page_title="Crop Yield Prediction",
     page_icon="🌾",
     layout="wide",
-    initial_sidebar_state="auto",
+    initial_sidebar_state="expanded",   # ← always expanded
 )
 
 # ══════════════════════════════════════════════
-#  CSS — FULLY RESPONSIVE (laptop + mobile)
+#  CSS — SIDEBAR ALWAYS VISIBLE (laptop + mobile)
 # ══════════════════════════════════════════════
 st.markdown(
     """
@@ -46,8 +46,71 @@ html, body { font-family: 'Inter', sans-serif; }
     padding-right: 1rem !important;
 }
 
-/* ── Sidebar ── */
-section[data-testid="stSidebar"] { background: #1a3a2a; border-right: 1px solid #243d2e; }
+/* ══════════════════════════════════════════
+   SIDEBAR — ALWAYS VISIBLE FIX
+   ══════════════════════════════════════════ */
+
+/* Force sidebar to always show — never collapse */
+section[data-testid="stSidebar"] {
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    transform: none !important;
+    position: relative !important;
+    min-width: 240px !important;
+    max-width: 320px !important;
+    width: 280px !important;
+    background: #1a3a2a !important;
+    border-right: 1px solid #243d2e !important;
+    z-index: 999 !important;
+    flex-shrink: 0 !important;
+}
+
+/* Hide the collapse/toggle arrow button completely */
+section[data-testid="stSidebar"] > div:first-child > div > button,
+[data-testid="collapsedControl"],
+button[kind="header"],
+.st-emotion-cache-dvne4q,
+[data-testid="stSidebarCollapseButton"],
+button[aria-label="Close sidebar"],
+button[aria-label="Collapse sidebar"] {
+    display: none !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+}
+
+/* Mobile: sidebar stays as a top bar instead of disappearing */
+@media (max-width: 768px) {
+    /* Override Streamlit's mobile sidebar hide */
+    section[data-testid="stSidebar"] {
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: 100vw !important;
+        max-width: 100vw !important;
+        min-width: unset !important;
+        height: auto !important;
+        min-height: unset !important;
+        max-height: 55vh !important;
+        overflow-y: auto !important;
+        z-index: 9999 !important;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.25) !important;
+        border-right: none !important;
+        border-bottom: 2px solid #2d7a46 !important;
+    }
+
+    /* Push main content down so it's not hidden behind fixed sidebar */
+    .main .block-container {
+        margin-top: 420px !important;
+        padding-top: 1rem !important;
+    }
+
+    section[data-testid="stSidebar"] [data-testid="stSidebarContent"] {
+        padding: 0.8rem 1rem !important;
+    }
+}
+
+/* Sidebar text / element styles */
 section[data-testid="stSidebar"] * { color: #e8f0ec !important; }
 section[data-testid="stSidebar"] .stButton > button {
     background: #2d7a46 !important; color: white !important;
@@ -220,6 +283,7 @@ section[data-testid="stSidebar"] label {
         flex: 1 1 45% !important;
     }
 }
+</style>
 """,
     unsafe_allow_html=True,
 )
@@ -530,7 +594,7 @@ STATE_YIELD_AVG = {
 
 
 # ══════════════════════════════════════════════
-#  SESSION STATE INIT  ← FIX
+#  SESSION STATE INIT
 # ══════════════════════════════════════════════
 if "has_predicted" not in st.session_state:
     st.session_state.has_predicted = False
@@ -652,7 +716,7 @@ with st.sidebar:
     st.markdown(
         """
     <div style='padding:1rem 0 0.5rem;'>
-        <div style='font-size:1.1rem;font-weight:700;color:#e8f0ec;'>Crop Yield Prediction</div>
+        <div style='font-size:1.1rem;font-weight:700;color:#e8f0ec;'>🌾 Crop Yield Prediction</div>
         <div style='font-size:0.7rem;color:#5a8a6a;margin-top:2px;
                     text-transform:uppercase;letter-spacing:0.07em;'>
             Prediction System
@@ -700,7 +764,6 @@ with st.sidebar:
 
     st.markdown("<hr style='margin:0.8rem 0;'>", unsafe_allow_html=True)
 
-    # ── FIX: session_state se button link karo ──
     if st.button("Run Prediction", use_container_width=True):
         st.session_state.has_predicted = True
 
@@ -718,7 +781,7 @@ with st.sidebar:
 
 
 # ══════════════════════════════════════════════
-#  WELCOME SCREEN  ← FIX: predict_btn = True HATA DIYA
+#  WELCOME SCREEN
 # ══════════════════════════════════════════════
 if not st.session_state.has_predicted:
     st.markdown(
